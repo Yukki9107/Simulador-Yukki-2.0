@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Examen · {{ module_cfg.name }}{% endblock %}
+
+{% block content %}
+<section class="exam-card">
+  <header class="exam-header">
+    <div>
+      <h1>{{ module_cfg.name }}</h1>
+      <p class="exam-subtitle">Simulacro rápido.</p>
+    </div>
+
+    <div class="exam-status">
+      {% if question %}
+        <span>Pregunta {{ index }} de {{ total }}</span><br>
+        <span>
+          Tiempo restante:
+          <span id="timer-display" data-remaining="{{ remaining_seconds }}"></span>
+        </span>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if error %}
+    <p class="error-msg">{{ error }}</p>
+
+  {% elif question %}
+    <form method="post" class="exam-form" id="exam-form">
+      <p class="question-text">{{ question.text }}</p>
+
+      <ul class="options-list">
+        {% for opt in question.options %}
+          <li>
+            <label class="option-item">
+              <input type="radio" name="answer" value="{{ loop.index0 }}">
+              <span>{{ opt }}</span>
+            </label>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <div class="exam-actions">
+        <button type="submit" class="btn primary">
+          {% if index == total %}Finalizar{% else %}Siguiente{% endif %}
+        </button>
+        <a href="{{ url_for('reset') }}" class="btn ghost">Cancelar simulacro</a>
+      </div>
+    </form>
+
+  {% else %}
+    <p>No hay pregunta que mostrar.</p>
+  {% endif %}
+</section>
+
+{% if question %}
+<script>
+(function () {
+  const display = document.getElementById("timer-display");
+  const form = document.getElementById("exam-form");
+  let remaining = parseInt(display?.dataset.remaining || "0", 10);
+
+  function formatTime(sec) {
+    const m = Math.floor(sec / 60).toString().padStart(2, "0");
+    const s = (sec % 60).toString().padStart(2, "0");
+    return m + ":" + s;
+  }
+
+  function update() {
+    if (!display) return;
+    display.textContent = formatTime(Math.max(0, remaining));
+  }
+
+  update();
+
+  const interval = setInterval(() => {
+    remaining--;
+
+    if (remaining <= 0) {
+      clearInterval(interval);
+      update();
+      if (form) form.submit();
+    } else {
+      update();
+    }
+  }, 1000);
+})();
+</script>
+{% endif %}
+{% endblock %}

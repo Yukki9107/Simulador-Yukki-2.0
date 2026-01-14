@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Simulador ESIIES{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<header class="app-header">
+    <div class="app-header-inner">
+        <div class="branding">
+            <div class="logo-circle">Q</div>
+            <div>
+                <div class="brand-title">Simulador ESIIES</div>
+                <div class="brand-subtitle">Ingeniería Química · TESCHI</div>
+            </div>
+        </div>
+        <nav>
+            <a href="{{ url_for('index') }}">Inicio</a>
+            {% if session.get('quiz') %}
+                <a href="{{ url_for('results') }}">Resultados actuales</a>
+                <a href="{{ url_for('reset') }}">Nuevo simulacro</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+<main class="app-main">
+    <div class="app-container">
+        {% block content %}{% endblock %}
+    </div>
+</main>
+
+<footer class="app-footer">
+    <div class="app-footer-inner">
+        <span>Proyecto de práctica · No oficial · Elaborado con Python + Flask</span>
+    </div>
+</footer>
+</body>
+</html>
